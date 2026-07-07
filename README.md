@@ -1,24 +1,51 @@
 # Poker Odds Calculator
 
-An 8-max poker range analyzer. Pick your position and hole cards, build
-opponent ranges on a 13x13 grid, and it computes blocker-adjusted combo
-counts and per-seat probabilities.
+An 8-max poker range analyzer I built to get a better feel for blockers and
+card removal when I'm working on preflop ranges. You pick your seat and your
+two hole cards, mark out what you think each opponent is holding on a 13x13
+grid, and it tells you how many combos of each hand actually remain and how
+likely someone still has it.
 
-It's a single Python file with no dependencies. The backend does the
-combinatorics and serves an HTML/CSS/JS interface to the browser.
+The whole thing is a single Python file with no dependencies. Python handles
+the combinatorics and serves a local web page, so you just run it and it opens
+in your browser.
 
-## Run
+## Running it
 
 ```
 python hand_odds_calc.py
 ```
 
-It opens in your browser automatically.
+It starts a local server and opens automatically. No pip install and no setup,
+it only uses the standard library.
 
 ## What it does
 
-- SVG poker table with 8 seats and a position selector
-- Hand range editor: type ranges or drag-select on the 13x13 grid
-- Blocker math: holding an ace drops an opponent's AKo combos from 12 to 9,
-  AA from 6 to 3, and so on
-- Per-seat probability bars using C(50,2) = 1225 as the denominator
+- Poker table drawn in SVG with all 8 seats and a position selector
+- A 13x13 hand grid where you can drag to select ranges or type them in (like `TT+, AQs+`)
+- Combo counts that adjust for the cards you're already holding
+- Per-seat probability bars showing how likely at least one opponent has a given hand
+
+## The blocker part
+
+This is the reason I made it. The number of combos for any hand changes based
+on the cards you can see. Normally an offsuit hand is 12 combos, suited is 4,
+and a pair is 6. If you're holding a card that's part of that hand, the count
+drops:
+
+- Holding one ace takes an opponent's AKo from 12 down to 9, and AA from 6 down to 3
+- Holding A2o takes their A2o from 12 down to 7
+
+The tool does this automatically across all 169 hand classes based on whatever
+hole cards you enter, then uses C(50,2) = 1225 as the denominator for the
+probabilities.
+
+## Built with
+
+- Python (standard library only)
+- HTML / CSS / JavaScript for the front end
+- No frameworks or external packages
+
+## Author
+
+Neel Ramachandran
