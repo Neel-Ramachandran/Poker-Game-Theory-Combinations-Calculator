@@ -7,8 +7,8 @@ grid, and it tells you how many combos of each hand actually remain and how
 likely someone still has it.
 
 The whole thing is a single Python file with no dependencies. Python handles
-the combinatorics and serves a local web page, so you just run it and it opens
-in your browser.
+the combinatorics and writes a temporary HTML page, which it then opens
+directly in your browser (no local server involved).
 
 ## Running it
 
@@ -16,8 +16,8 @@ in your browser.
 python hand_odds_calc.py
 ```
 
-It starts a local server and opens automatically. No pip install and no setup,
-it only uses the standard library.
+It opens a temporary HTML file in your default browser automatically. No pip
+install and no setup, it only uses the standard library.
 
 ## What it does
 
