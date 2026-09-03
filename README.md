@@ -37,7 +37,7 @@ drops:
 - Holding A2o takes their A2o from 12 down to 7
 
 The tool does this automatically across all 169 hand classes based on whatever
-hole cards you enter, then uses C(50,2) = 1225 as the denominator for the
+hole cards you enter, then uses C(52,2) = 1326 as the denominator for the
 probabilities.
 
 ## Built with
