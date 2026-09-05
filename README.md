@@ -13,7 +13,7 @@ directly in your browser (no local server involved).
 ## Running it
 
 ```
-python hand_odds_calc.py
+python3 hand_odds_calc.py
 ```
 
 It opens a temporary HTML file in your default browser automatically. No pip
