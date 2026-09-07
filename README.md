@@ -21,7 +21,7 @@ install and no setup, it only uses the standard library.
 
 ## What it does
 
-- Poker table drawn in SVG with all 8 seats and a position selector
+- Poker table drawn in SVG with all 8 seats and a position selector (seats before yours auto-fold, and you can click any seat to toggle it folded/active)
 - A 13x13 hand grid where you can drag to select ranges or type them in (like `TT+, AQs+`)
 - Combo counts that adjust for the cards you're already holding
 - Per-seat probability bars showing how likely at least one opponent has a given hand
