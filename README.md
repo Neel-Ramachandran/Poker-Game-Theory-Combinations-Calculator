@@ -17,7 +17,7 @@ python3 hand_odds_calc.py
 ```
 
 It opens a temporary HTML file in your default browser automatically. No pip
-install and no setup, it only uses the standard library.
+install and no setup — it only uses the standard library.
 
 ## What it does
 
