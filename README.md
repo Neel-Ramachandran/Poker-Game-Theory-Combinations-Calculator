@@ -17,7 +17,9 @@ python3 hand_odds_calc.py
 ```
 
 It opens a temporary HTML file in your default browser automatically. No pip
-install and no setup — it only uses the standard library.
+install and no setup — it only uses the standard library. That HTML file is
+written to your OS temp directory and isn't deleted after the script exits,
+so your system's normal temp-file cleanup is what eventually removes it.
 
 ## What it does
 
