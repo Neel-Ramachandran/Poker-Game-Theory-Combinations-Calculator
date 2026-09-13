@@ -30,17 +30,14 @@ so your system's normal temp-file cleanup is what eventually removes it.
 
 ## The blocker part
 
-This is the reason I made it. The number of combos for any hand changes based
-on the cards you can see. Normally an offsuit hand is 12 combos, suited is 4,
-and a pair is 6. If you're holding a card that's part of that hand, the count
-drops:
-
-- Holding one ace takes an opponent's AKo from 12 down to 9, and AA from 6 down to 3
-- Holding A2o takes their A2o from 12 down to 7
-
-The tool does this automatically across all 169 hand classes based on whatever
-hole cards you enter, then uses C(52,2) = 1326 as the denominator for the
-probabilities.
+This is the reason I made it. Normally an offsuit hand is 12 combos, suited is
+4, and a pair is 6, and these are the counts the range grid and combo badges
+show. Once you enter your own hole cards, the summary combo count is reduced
+by 1 (since you're now holding cards you know can't be in an opponent's
+range) before the per-seat probabilities are computed against the C(52,2) =
+1326 denominator. It isn't yet a full per-hand-class recount for every one of
+the 169 hand classes based on your specific hole cards — just a flat
+adjustment to the overall total.
 
 ## Built with
 
