@@ -31,7 +31,7 @@ so your system's normal temp-file cleanup is what eventually removes it.
 ## The blocker part
 
 This is the reason I made it. Normally an offsuit hand is 12 combos, suited is
-4, and a pair is 6, and these are the counts the range grid and combo badges
+4, and a pair is 6 — these are the counts the range grid and combo badges
 show. Once you enter your own hole cards, the summary combo count is reduced
 by 1 (since you're now holding cards you know can't be in an opponent's
 range) before the per-seat probabilities are computed against the C(52,2) =
