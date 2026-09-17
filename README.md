@@ -16,6 +16,8 @@ directly in your browser (no local server involved).
 python3 hand_odds_calc.py
 ```
 
+(On Windows, use `python` instead of `python3` if the latter isn't on your PATH.)
+
 It opens a temporary HTML file in your default browser automatically. No pip
 install and no setup — it only uses the standard library. That HTML file is
 written to your OS temp directory and isn't deleted after the script exits,
