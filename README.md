@@ -6,9 +6,9 @@ two hole cards, mark out what you think each opponent is holding on a 13x13
 grid, and it tells you how many combos of each hand actually remain and how
 likely someone still has it.
 
-The whole thing is a single Python file with no dependencies. Python handles
-the combinatorics and writes a temporary HTML page, which it then opens
-directly in your browser (no local server involved).
+The whole thing is a single Python file with no dependencies. Python writes a
+temporary HTML page and opens it directly in your browser (no local server
+involved); all the combinatorics and equity math run in the page's JavaScript.
 
 ## Running it
 
@@ -26,20 +26,25 @@ so your system's normal temp-file cleanup is what eventually removes it.
 ## What it does
 
 - Poker table drawn in SVG with all 8 seats and a position selector (seats before yours auto-fold, and you can click any seat to toggle it folded/active)
-- A 13x13 hand grid where you can drag to select ranges or type them in (like `TT+, AQs+`)
-- Combo counts that adjust for the cards you're already holding
+- A 13x13 hand grid where you can drag to select ranges or type them in (like `TT+, AQs+`, `99-66`, `K9s-K6s`). Both views show the same range; editing the grid merges all the typed groups into one
+- Combo counts recounted card-by-card for the cards you're holding (blockers)
 - Per-seat probability bars showing how likely at least one opponent has a given hand
+- Your equity vs the opponent range if you get all-in preflop, heads-up and against every active seat (Monte Carlo, 40k simulated boards)
 
 ## The blocker part
 
 This is the reason I made it. Normally an offsuit hand is 12 combos, suited is
-4, and a pair is 6 — these are the counts the range grid and combo badges
-show. Once you enter your own hole cards, the summary combo count is reduced
-by 1 (since you're now holding cards you know can't be in an opponent's
-range) before the per-seat probabilities are computed against the C(52,2) =
-1326 denominator. It isn't yet a full per-hand-class recount for every one of
-the 169 hand classes based on your specific hole cards — just a flat
-adjustment to the overall total.
+4, and a pair is 6. Once you enter your own hole cards, every hand class in
+the opponent ranges is recounted with your two cards removed from the deck.
+Holding A-2 offsuit, for example, drops AA from 6 combos to 3 and AKo from 12
+to 9, while hands that don't share a rank with yours are unchanged. The
+per-seat probabilities then use C(50,2) = 1225 as the denominator, since
+opponents are dealt from the 50 cards you aren't holding.
+
+You can type a hand class (`AKo`, `76s`, `QQ`) or exact cards (`AsKh`). Exact
+suits only matter when your hand overlaps a suited/offsuit class in the
+range, e.g. holding A♠K♥ blocks two AKs combos instead of one. Overlapping
+range groups are only counted once in the summary.
 
 ## Built with
 

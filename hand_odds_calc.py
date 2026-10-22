@@ -17,48 +17,45 @@ PAGE = """<!DOCTYPE html>
 <title>Hand Odds Calculator</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
 body{
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  background:#0f1419;color:#e0e0e0;min-height:100vh;
+  background:#0f1419;color:#e0e0e0;
+  display:flex;flex-direction:column;overflow:hidden;
 }
 
 header{
   background:#1a2332;color:#fff;
-  padding:.9rem 1.5rem;
-  display:flex;align-items:center;gap:.85rem;
-  border-bottom:1px solid #2a3a4a;
+  padding:.55rem 1.25rem;
+  display:flex;align-items:baseline;gap:.75rem;
+  border-bottom:1px solid #2a3a4a;flex-shrink:0;
 }
-header h1{font-size:1.05rem;font-weight:600}
-header p{font-size:.72rem;color:rgba(255,255,255,.50);margin-top:2px}
+header h1{font-size:1rem;font-weight:600}
+header p{font-size:.72rem;color:rgba(255,255,255,.45)}
 
-.wrap{display:grid;grid-template-columns:1fr 400px;gap:1rem;padding:1rem;align-items:start}
-@media(max-width:900px){.wrap{grid-template-columns:1fr}}
+/* Everything fits in one screen: the columns shrink, the page never scrolls */
+.wrap{
+  flex:1;min-height:0;padding:.75rem;
+  display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:.75rem;
+}
+.col{display:flex;flex-direction:column;gap:.75rem;min-height:0}
 
 .card{
   background:#1a2230;border:1px solid #2a3a4a;border-radius:12px;
-  box-shadow:0 2px 10px rgba(0,0,0,.3);padding:1.1rem;
+  box-shadow:0 2px 10px rgba(0,0,0,.3);padding:.9rem 1rem;
 }
-.card+.card{margin-top:1rem}
-h3{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#7a8aa0;margin-bottom:.8rem}
-h4{font-size:.75rem;font-weight:600;color:#a0b0c0;margin-top:.8rem;margin-bottom:.4rem}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin-bottom:.5rem}
+h3{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#7a8aa0;margin-bottom:.6rem}
+.card-head h3{margin-bottom:0}
 
-.tbl-wrap{position:relative;width:100%;padding-bottom:60%}
-.tbl-svg{position:absolute;inset:0;width:100%;height:100%}
+.table-card{flex:1;min-height:0;display:flex;flex-direction:column}
+.tbl-svg{flex:1;min-height:0;width:100%}
+.hint{font-size:.67rem;color:#6a7a8a;text-align:center;margin-top:.25rem}
 
-.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:.65rem}
-.chip{
-  font-size:.67rem;font-weight:600;padding:3px 9px;border-radius:20px;
-  border:1.5px solid;cursor:pointer;user-select:none;transition:all .15s;
-}
-.chip.you{background:rgba(255,215,0,.15);border-color:#b8860b;color:#ffc700}
-.chip.on{background:rgba(37,99,235,.15);border-color:#2563eb;color:#6fb7ff}
-.chip.off{background:rgba(100,100,120,.15);border-color:#4a5a6a;color:#7a8a9a;text-decoration:line-through}
-.hint{font-size:.67rem;color:#6a7a8a;text-align:center;margin-top:.45rem}
-
-.pos-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:.5rem 0}
+.pos-grid{display:flex;flex-wrap:wrap;gap:4px}
 .pos-btn{
   border:1.5px solid #3a4a5a;background:#111820;color:#a0b0c0;
-  border-radius:8px;padding:6px;font-size:.75rem;font-weight:600;
+  border-radius:7px;padding:4px 9px;font-size:.72rem;font-weight:600;
   cursor:pointer;transition:all .15s;
 }
 .pos-btn:hover{border-color:#2563eb;color:#6fb7ff}
@@ -82,7 +79,15 @@ h4{font-size:.75rem;font-weight:600;color:#a0b0c0;margin-top:.8rem;margin-bottom
 .tab:hover{color:#a0b0c0}
 .tab.active{color:#6fb7ff;border-bottom-color:#2563eb}
 
-.tab-panel{display:none}
+.eq{margin-top:.8rem}
+.eq-head{display:flex;justify-content:space-between;align-items:baseline;font-size:.75rem;color:#a0b0c0;margin-bottom:5px}
+.eq-head small{color:#6a7a8a}
+.eq-head b{font-size:1.2rem;color:#e0e0e0}
+.eq .pt{height:12px}
+.eq-sub{font-size:.68rem;color:#6a7a8a;margin-top:5px}
+
+.ranges-card{flex:1;min-height:0;display:flex;flex-direction:column}
+.tab-panel{display:none;flex:1;min-height:0;overflow-y:auto}
 .tab-panel.active{display:block}
 
 .hand-grid{
@@ -129,10 +134,21 @@ h4{font-size:.75rem;font-weight:600;color:#a0b0c0;margin-top:.8rem;margin-bottom
   font-family:monospace;font-size:.75rem;color:#a0d0ff;
 }
 
+.results{flex-shrink:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.25rem}
 .sg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.sc{background:#111820;border:1px solid #2a3a4a;border-radius:8px;padding:.65rem .85rem}
+.sc{background:#111820;border:1px solid #2a3a4a;border-radius:8px;padding:.55rem .8rem}
 .sc .sl{font-size:.67rem;color:#7a8aa0;margin-bottom:2px}
 .sc .sv{font-size:1.1rem;font-weight:700;color:#e0e0e0}
+.sc .sv small{font-size:.7rem;font-weight:500;color:#7a8aa0}
+.sc.hl .sv{color:#ffc700}
+.empty{font-size:.75rem;color:#6a7a8a;padding:.4rem 0}
+
+@media(max-width:1000px){
+  body{overflow:auto;display:block}
+  .wrap{grid-template-columns:1fr}
+  .tbl-svg{flex:none;aspect-ratio:720/430}
+  .results{grid-template-columns:1fr}
+}
 
 .pr{display:flex;align-items:center;gap:7px;margin-bottom:5px}
 .pl{font-size:.72rem;font-weight:600;width:40px;flex-shrink:0;color:#a0b0c0}
@@ -152,18 +168,17 @@ h4{font-size:.75rem;font-weight:600;color:#a0b0c0;margin-top:.8rem;margin-bottom
 <body>
 
 <header>
-  <span style="font-size:1.5rem">🃏</span>
-  <div>
-    <h1>Hand Odds Calculator</h1>
-    <p>8-Max Ring Game · Smart Range Analysis</p>
-  </div>
+  <h1>🃏 Hand Odds Calculator</h1>
+  <p>8-max ring game · range &amp; blocker analysis</p>
 </header>
 
 <div class="wrap">
-  <div>
-    <div class="card">
-      <h3>Table view</h3>
-      <div class="tbl-wrap">
+  <div class="col">
+    <div class="card table-card">
+      <div class="card-head">
+        <h3>Your position</h3>
+        <div class="pos-grid" id="posGrid"></div>
+      </div>
         <svg id="tsvg" class="tbl-svg" viewBox="0 0 720 430" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <radialGradient id="fg" cx="50%" cy="47%" r="52%">
@@ -182,28 +197,40 @@ h4{font-size:.75rem;font-weight:600;color:#a0b0c0;margin-top:.8rem;margin-bottom
             font-size="8.5" font-family="Georgia,serif" letter-spacing="2.5">8 · MAX RING</text>
           <g id="seats"></g>
         </svg>
+      <div class="hint">Picking your position folds everyone who acts before you. Click any seat to fold / unfold it (e.g. if someone opened).</div>
+    </div>
+
+    <div class="card results">
+      <div>
+        <h3>Summary</h3>
+        <div class="sg">
+          <div class="sc"><div class="sl">Combos in range</div><div class="sv" id="sCombos">—</div></div>
+          <div class="sc"><div class="sl">Blocked by your hand</div><div class="sv" id="sBlocked">—</div></div>
+          <div class="sc"><div class="sl">Per opponent</div><div class="sv" id="sPer">—</div></div>
+          <div class="sc hl"><div class="sl" id="sLbl">Any of N opp.</div><div class="sv" id="sAny">—</div></div>
+        </div>
       </div>
-      <div class="chips" id="chips"></div>
-      <div class="hint">Click seats to toggle folded / active. Earlier positions auto-fold when you choose your position.</div>
+      <div>
+        <h3>Per-seat probability</h3>
+        <div id="bars"></div>
+      </div>
     </div>
   </div>
 
-  <div>
-    <div class="card">
-      <h3>Your Position</h3>
-      <div class="pos-grid" id="posGrid"></div>
-      <h4 style="margin-top:0.6rem;margin-bottom:0.4rem;font-size:.68rem">Unfold these opponents:</h4>
-      <div class="chips" id="unfoldChips"></div>
-    </div>
-
+  <div class="col">
     <div class="card">
       <h3>Your Hand</h3>
-      <input type="text" id="yourHand" class="hand-input" placeholder="e.g. AKs or KK or clear" spellcheck="false">
+      <input type="text" id="yourHand" class="hand-input" placeholder="e.g. AKs, KK, or exact cards like AsKh" spellcheck="false">
       <div class="hand-display" id="yourHandDisplay" style="display:none"></div>
+      <div class="eq">
+        <div class="eq-head"><span>Equity vs range <small>(heads-up, all-in preflop)</small></span><b id="eqVal">—</b></div>
+        <div class="pt"><div class="pf" id="eqBar" style="width:0"></div></div>
+        <div class="eq-sub" id="eqSub">Enter your hand to see equity.</div>
+      </div>
     </div>
 
-    <div class="card">
-      <h3>Hand Ranges</h3>
+    <div class="card ranges-card">
+      <h3>Opponent ranges</h3>
       <div class="tabs">
         <button class="tab active" data-tab="manual">Manual Input</button>
         <button class="tab" data-tab="table">Hand Table</button>
@@ -226,144 +253,220 @@ h4{font-size:.75rem;font-weight:600;color:#a0b0c0;margin-top:.8rem;margin-bottom
         <div class="hand-grid" id="handGrid"></div>
       </div>
     </div>
-
-    <div class="card">
-      <h3>Summary</h3>
-      <div class="sg">
-        <div class="sc"><div class="sl">Combos in range</div><div class="sv" id="sCombos">—</div></div>
-        <div class="sc"><div class="sl">% of all hands</div><div class="sv" id="sPct">—</div></div>
-        <div class="sc"><div class="sl">Per-opponent</div><div class="sv" id="sPer">—</div></div>
-        <div class="sc"><div class="sl" id="sLbl">Any of N opp.</div><div class="sv" id="sAny">—</div></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>Per-seat probability</h3>
-      <div id="bars"></div>
-    </div>
   </div>
 </div>
 
 <script>
 const RANKS = '2 3 4 5 6 7 8 9 T J Q K A'.split(' ');
 const RV = Object.fromEntries(RANKS.map((r, i) => [r, i]));
+const SUITS = ['s', 'h', 'd', 'c'];
+const SUIT_SYM = { s: '♠', h: '♥', d: '♦', c: '♣' };
 const TOTAL = 1326;
 
-function parseSingle(raw) {
+// Expand one token (e.g. "66+", "AJo+", "KQs") into hand classes like "AKo".
+// Returns null for an invalid token.
+function expandSingle(raw) {
   const s = raw.trim().toUpperCase();
-  if (!s) return 0;
+  if (!s) return [];
+  // Dash ranges: "99-66" or "K9s-K6s" (same top card, same suitedness)
+  if (s.includes('-')) {
+    const [x, y] = s.split('-').map(p => expandSingle(p));
+    if (!x || !y || x.length !== 1 || y.length !== 1) return null;
+    const a = x[0], b = y[0];
+    if (a.length !== b.length || a[2] !== b[2] || (a.length === 3 && a[0] !== b[0])) return null;
+    const pos = a.length === 2 ? 0 : 1;
+    const hi = Math.max(RV[a[pos]], RV[b[pos]]), lo = Math.min(RV[a[pos]], RV[b[pos]]);
+    const out = [];
+    for (let k = lo; k <= hi; k++) out.push(a.length === 2 ? RANKS[k] + RANKS[k] : a[0] + RANKS[k] + a[2]);
+    return out;
+  }
   const plus = s.endsWith('+');
   const h = plus ? s.slice(0, -1) : s;
   if (h.length === 2 && h[0] === h[1]) {
     const i = RV[h[0]];
-    if (i === undefined) return 0;
-    return (plus ? (12 - i + 1) : 1) * 6;
+    if (i === undefined) return null;
+    const out = [];
+    for (let k = i; k <= (plus ? 12 : i); k++) out.push(RANKS[k] + RANKS[k]);
+    return out;
   }
   if (h.length === 3) {
     const r1 = h[0], r2 = h[1], su = h[2].toLowerCase();
-    if (RV[r1] === undefined || RV[r2] === undefined || r1 === r2) return 0;
-    if (su !== 'o' && su !== 's') return 0;
-    const cpp = su === 'o' ? 12 : 4;
+    if (RV[r1] === undefined || RV[r2] === undefined || r1 === r2) return null;
+    if (su !== 'o' && su !== 's') return null;
     const hi = Math.max(RV[r1], RV[r2]);
     const lo = Math.min(RV[r1], RV[r2]);
-    return plus ? (hi - lo) * cpp : cpp;
+    const out = [];
+    for (let k = lo; k <= (plus ? hi - 1 : lo); k++) out.push(RANKS[hi] + RANKS[k] + su);
+    return out;
   }
-  return 0;
+  return null;
 }
 
+// Set of hand classes covered by a comma-separated range string.
 function parseRange(str) {
-  return Math.min(str.split(',').reduce((sum, p) => sum + parseSingle(p), 0), TOTAL);
+  const classes = new Set();
+  str.split(',').forEach(p => (expandSingle(p) || []).forEach(c => classes.add(c)));
+  return classes;
 }
 
-function handCombos(hand) {
-  return parseSingle(hand);
-}
-
-// Convert selected hands to smart range notation
-function handsToRangeString(hands) {
-  if (hands.size === 0) return '';
-  
-  const result = [];
-  const pairsList = [];
-  const suitedByHi = {};
-  const ofsuitByHi = {};
-  
-  // Organize hands into categories
-  hands.forEach(hand => {
-    if (hand.length === 2 && hand[0] === hand[1]) {
-      pairsList.push(hand[0]);
-    } else if (hand.length === 3) {
-      const hi = hand[0];
-      const lo = hand[1];
-      const suit = hand[2];
-      
-      if (suit === 's') {
-        if (!suitedByHi[hi]) suitedByHi[hi] = [];
-        suitedByHi[hi].push(lo);
-      } else if (suit === 'o') {
-        if (!ofsuitByHi[hi]) ofsuitByHi[hi] = [];
-        ofsuitByHi[hi].push(lo);
-      }
-    }
-  });
-  
-  // Process pairs
-  if (pairsList.length > 0) {
-    const pairs = Array.from(new Set(pairsList)).sort((a, b) => RV[a] - RV[b]);
-    let i = 0;
-    while (i < pairs.length) {
-      let j = i;
-      while (j + 1 < pairs.length && RV[pairs[j + 1]] === RV[pairs[j]] + 1) j++;
-      if (i === j) {
-        result.push(pairs[i] + pairs[i]);
-      } else {
-        result.push(pairs[i] + pairs[j] + '+');
-      }
-      i = j + 1;
+// Every specific two-card combo of a hand class, cards written like "As".
+function classCombos(cls) {
+  const r1 = cls[0], r2 = cls[1];
+  const out = [];
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 4; j++) {
+      // Pairs: each suit pair once. Suited: same suit only. Offsuit: different suits only.
+      if (r1 === r2 ? j <= i : (cls[2] === 's') !== (i === j)) continue;
+      out.push([r1 + SUITS[i], r2 + SUITS[j]]);
     }
   }
-  
-  // Process suited combos
-  Object.keys(suitedByHi).sort((a, b) => RV[b] - RV[a]).forEach(hi => {
-    const lows = Array.from(new Set(suitedByHi[hi])).sort((a, b) => RV[a] - RV[b]);
-    let i = 0;
-    while (i < lows.length) {
-      let j = i;
-      while (j + 1 < lows.length && RV[lows[j + 1]] === RV[lows[j]] + 1) j++;
-      const start = lows[i];
-      const end = lows[j];
-      if (i === j) {
-        result.push(hi + start + 's');
-      } else if (RV[end] === RV[hi] - 1) {
-        result.push(hi + start + 's+');
-      } else {
-        result.push(hi + start + end + 's+');
+  return out;
+}
+
+// Combos of the given classes that don't use any of the dead cards.
+function liveCombos(classes, dead) {
+  let n = 0;
+  classes.forEach(cls => {
+    classCombos(cls).forEach(([a, b]) => { if (!dead.has(a) && !dead.has(b)) n++; });
+  });
+  return n;
+}
+
+// Parse the hero's hand: specific cards ("AsKh") or a class ("AKo").
+// A class uses a representative suit combo, which is exact because every
+// combo of a class removes the same number of combos from suit-symmetric ranges.
+function parseHeroHand(raw) {
+  const s = raw.replace(/[ ,]/g, '');
+  const m = s.match(/^([2-9TJQKA])([SHDC])([2-9TJQKA])([SHDC])$/i);
+  if (m) {
+    const c1 = m[1].toUpperCase() + m[2].toLowerCase();
+    const c2 = m[3].toUpperCase() + m[4].toLowerCase();
+    if (c1 === c2) return null;
+    const pretty = c => c[0] + SUIT_SYM[c[1]];
+    return { label: pretty(c1) + ' ' + pretty(c2), cards: [c1, c2] };
+  }
+  if (s.includes('+')) return null;
+  const cls = expandSingle(s);
+  if (!cls || cls.length !== 1) return null;
+  return { label: cls[0], cards: classCombos(cls[0])[0], combos: classCombos(cls[0]).length };
+}
+
+// ---- Equity: Monte Carlo over random opponent hands and boards ----
+
+// Cards as ints 0-51: rank * 4 + suit
+const cardInt = c => RV[c[0]] * 4 + SUITS.indexOf(c[1]);
+
+// Highest card of a straight in a rank bitmask, or -1 (the wheel A-5 is 5-high)
+function straightTop(mask) {
+  for (let hi = 12; hi >= 4; hi--) if (((mask >> (hi - 4)) & 31) === 31) return hi;
+  return (mask & 0x100F) === 0x100F ? 3 : -1;
+}
+
+// The n highest ranks in a bitmask, packed 4 bits each, highest first
+function topRanks(mask, n) {
+  let v = 0;
+  for (let r = 12; r >= 0 && n > 0; r--) if (mask & (1 << r)) { v = (v << 4) | r; n--; }
+  return v;
+}
+
+const rc = new Int8Array(13), sc = new Int8Array(4), sm = new Int32Array(4);
+
+// Score the best 5-card hand out of 7 cards; higher is better.
+// Category (0 = high card ... 8 = straight flush) sits above the 20 tiebreaker bits.
+function evalHand(cards) {
+  rc.fill(0); sc.fill(0); sm.fill(0);
+  let all = 0;
+  for (let i = 0; i < cards.length; i++) {
+    const r = cards[i] >> 2, s = cards[i] & 3;
+    rc[r]++; sc[s]++; sm[s] |= 1 << r; all |= 1 << r;
+  }
+  // With 7 cards a flush can't coexist with quads or a full house, so check it first
+  for (let s = 0; s < 4; s++) {
+    if (sc[s] < 5) continue;
+    const sf = straightTop(sm[s]);
+    return sf >= 0 ? (8 << 20) | sf : (5 << 20) | topRanks(sm[s], 5);
+  }
+  const quads = [], trips = [], pairs = [];
+  for (let r = 12; r >= 0; r--) {
+    if (rc[r] === 4) quads.push(r);
+    else if (rc[r] === 3) trips.push(r);
+    else if (rc[r] === 2) pairs.push(r);
+  }
+  if (quads.length) return (7 << 20) | (quads[0] << 4) | topRanks(all & ~(1 << quads[0]), 1);
+  if (trips.length && (trips.length > 1 || pairs.length)) {
+    return (6 << 20) | (trips[0] << 4) | Math.max(trips.length > 1 ? trips[1] : -1, pairs.length ? pairs[0] : -1);
+  }
+  const st = straightTop(all);
+  if (st >= 0) return (4 << 20) | st;
+  if (trips.length) return (3 << 20) | (trips[0] << 8) | topRanks(all & ~(1 << trips[0]), 2);
+  if (pairs.length > 1) {
+    return (2 << 20) | (pairs[0] << 8) | (pairs[1] << 4) | topRanks(all & ~(1 << pairs[0]) & ~(1 << pairs[1]), 1);
+  }
+  if (pairs.length) return (1 << 20) | (pairs[0] << 12) | topRanks(all & ~(1 << pairs[0]), 3);
+  return topRanks(all, 5);
+}
+
+// Run a batch of trials: deal each opponent a combo from the range, deal a board,
+// and score the showdown (ties split). Returns [equity won, trials completed].
+function simTrials(hero, combos, nOpp, trials, used) {
+  let eq = 0, done = 0;
+  const opp = new Array(nOpp), board = [];
+  for (let t = 0; t < trials; t++) {
+    // Redeal the whole table on a card clash so multiway deals stay unbiased
+    let ok = false;
+    for (let attempt = 0; attempt < 100 && !ok; attempt++) {
+      used.fill(0); used[hero[0]] = used[hero[1]] = 1;
+      ok = true;
+      for (let k = 0; k < nOpp && ok; k++) {
+        const c = combos[Math.random() * combos.length | 0];
+        if (used[c[0]] || used[c[1]]) ok = false;
+        else { used[c[0]] = used[c[1]] = 1; opp[k] = c; }
       }
+    }
+    if (!ok) continue;
+    board.length = 0;
+    while (board.length < 5) {
+      const c = Math.random() * 52 | 0;
+      if (!used[c]) { used[c] = 1; board.push(c); }
+    }
+    const mine = evalHand([hero[0], hero[1], ...board]);
+    let best = -1, nBest = 0;
+    for (let k = 0; k < nOpp; k++) {
+      const s = evalHand([opp[k][0], opp[k][1], ...board]);
+      if (s > best) { best = s; nBest = 1; } else if (s === best) nBest++;
+    }
+    eq += mine > best ? 1 : mine === best ? 1 / (nBest + 1) : 0;
+    done++;
+  }
+  return [eq, done];
+}
+
+// Convert a set of hand classes to compact range notation the parser reads back:
+// "44+", "99-66", "AJs+", "K9s-K6s", or single hands
+function handsToRangeString(hands) {
+  const out = [];
+  // Joins consecutive ranks (ascending) into runs; top is the highest rank a "+" can reach
+  const runs = (ranks, top, fmt, fmtRange) => {
+    ranks.sort((a, b) => a - b);
+    for (let i = 0; i < ranks.length; ) {
+      let j = i;
+      while (j + 1 < ranks.length && ranks[j + 1] === ranks[j] + 1) j++;
+      if (i === j) out.push(fmt(ranks[i]));
+      else if (ranks[j] === top) out.push(fmt(ranks[i]) + '+');
+      else out.push(fmtRange(ranks[j], ranks[i]));
       i = j + 1;
     }
-  });
-  
-  // Process offsuit combos
-  Object.keys(ofsuitByHi).sort((a, b) => RV[b] - RV[a]).forEach(hi => {
-    const lows = Array.from(new Set(ofsuitByHi[hi])).sort((a, b) => RV[a] - RV[b]);
-    let i = 0;
-    while (i < lows.length) {
-      let j = i;
-      while (j + 1 < lows.length && RV[lows[j + 1]] === RV[lows[j]] + 1) j++;
-      const start = lows[i];
-      const end = lows[j];
-      if (i === j) {
-        result.push(hi + start + 'o');
-      } else if (RV[end] === RV[hi] - 1) {
-        result.push(hi + start + 'o+');
-      } else {
-        result.push(hi + start + end + 'o+');
-      }
-      i = j + 1;
+  };
+  const pairs = [...hands].filter(h => h.length === 2).map(h => RV[h[0]]).reverse();
+  runs(pairs, 12, r => RANKS[r] + RANKS[r], (hi, lo) => RANKS[hi] + RANKS[hi] + '-' + RANKS[lo] + RANKS[lo]);
+  ['s', 'o'].forEach(su => {
+    for (let hi = 12; hi > 0; hi--) {
+      const lows = [...hands].filter(h => h.length === 3 && h[2] === su && RV[h[0]] === hi).map(h => RV[h[1]]);
+      const f = lo => RANKS[hi] + RANKS[lo] + su;
+      runs(lows, hi - 1, f, (a, b) => f(a) + '-' + f(b));
     }
   });
-  
-  return result.join(', ');
+  return out.join(', ');
 }
 
 const POS = [
@@ -377,6 +480,7 @@ const POS = [
   { id: 'bb',    lbl: 'BB',    name: 'Big Blind',     angle: 90  },
 ];
 
+// Preflop acting order: everyone before your seat is assumed to have folded
 const ACTION_ORDER = ['utg', 'utg1', 'lj', 'hj', 'co', 'btn', 'sb', 'bb'];
 
 let yourPosition = 'btn';
@@ -393,29 +497,12 @@ function setYourPosition(posId) {
   });
   updatePositionUI();
   renderTable();
-  renderChips();
-  renderUnfoldChips();
   updateAll();
 }
 
 function updatePositionUI() {
   document.querySelectorAll('.pos-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.pos === yourPosition);
-  });
-}
-
-function renderUnfoldChips() {
-  const el = document.getElementById('unfoldChips');
-  el.innerHTML = '';
-  const yourIdx = ACTION_ORDER.indexOf(yourPosition);
-  ACTION_ORDER.slice(0, yourIdx).forEach(id => {
-    const pos = POS.find(p => p.id === id);
-    const c = document.createElement('span');
-    c.className = 'chip ' + (active[id] ? 'on' : 'off');
-    c.textContent = pos.lbl;
-    c.title = pos.name;
-    c.onclick = () => { active[id] = !active[id]; renderTable(); renderUnfoldChips(); updateAll(); };
-    el.appendChild(c);
   });
 }
 
@@ -433,7 +520,7 @@ function sStyle(pos) {
   return SEAT_STYLE.def;
 }
 
-const CX = 360, CY = 215, SRX = 312, SRY = 182, R = 25;
+const CX = 360, CY = 215, SRX = 308, SRY = 178, R = 32;
 
 function seatXY(angle) {
   const rad = angle * Math.PI / 180;
@@ -455,7 +542,8 @@ function renderTable() {
     const grp = svgEl('g');
     if (pos.id !== yourPosition) {
       grp.style.cursor = 'pointer';
-      grp.onclick = () => { active[pos.id] = !active[pos.id]; renderTable(); renderChips(); updateAll(); };
+      grp.onclick = () => { active[pos.id] = !active[pos.id]; renderTable(); updateAll(); };
+      grp.appendChild(svgEl('title')).textContent = pos.name + ' (click to fold / unfold)';
     }
 
     grp.appendChild(svgEl('circle', { cx: x+1, cy: y+2, r: R, fill: 'rgba(0,0,0,.2)' }));
@@ -464,13 +552,13 @@ function renderTable() {
       'stroke-width': pos.id === yourPosition ? 2.5 : 1.5
     }));
 
-    if (pos.id === yourPosition) {
+    if (pos.id === 'btn') {
       grp.appendChild(svgEl('circle', {
-        cx: x + R * .68, cy: y - R * .68, r: 9,
+        cx: x + R * .72, cy: y - R * .72, r: 10,
         fill: '#fff', stroke: '#a57900', 'stroke-width': '1.5'
       }));
       const dt = svgEl('text', {
-        x: x + R * .68, y: y - R * .68 + 3.5,
+        x: x + R * .72, y: y - R * .72 + 3.5,
         'text-anchor': 'middle', fill: '#a57900',
         'font-size': '8', 'font-weight': 'bold'
       });
@@ -478,20 +566,19 @@ function renderTable() {
       grp.appendChild(dt);
     }
 
-    const isActive = pos.id === yourPosition || active[pos.id];
     const lbl = svgEl('text', {
-      x, y: y + (isActive ? -3 : 2),
+      x, y: y - 2,
       'text-anchor': 'middle', fill: txt,
-      'font-size': '10.5', 'font-weight': '700',
+      'font-size': '13', 'font-weight': '700',
       'font-family': 'system-ui,sans-serif'
     });
     lbl.textContent = pos.lbl;
     grp.appendChild(lbl);
 
     const sub = svgEl('text', {
-      x, y: y + 11,
+      x, y: y + 13,
       'text-anchor': 'middle', fill: txt,
-      'font-size': '8', 'font-family': 'system-ui,sans-serif',
+      'font-size': '10.5', 'font-family': 'system-ui,sans-serif',
       opacity: '.88', id: 'sp_' + pos.id
     });
     if (pos.id === yourPosition) sub.textContent = 'YOU';
@@ -502,39 +589,17 @@ function renderTable() {
   });
 }
 
-function renderChips() {
-  const el = document.getElementById('chips');
-  el.innerHTML = '';
-  POS.forEach(pos => {
-    const c = document.createElement('span');
-    if (pos.id === yourPosition) {
-      c.className = 'chip you';
-      c.textContent = pos.lbl;
-    } else if (active[pos.id]) {
-      c.className = 'chip on';
-      c.textContent = pos.lbl;
-      c.onclick = () => { active[pos.id] = false; renderTable(); renderChips(); updateAll(); };
-      c.style.cursor = 'pointer';
-    } else {
-      c.className = 'chip off';
-      c.textContent = pos.lbl;
-      c.onclick = () => { active[pos.id] = true; renderTable(); renderChips(); updateAll(); };
-      c.style.cursor = 'pointer';
-    }
-    c.title = pos.name;
-    el.appendChild(c);
-  });
-}
-
 function setYourHand(hand) {
-  yourHand = hand.trim().toUpperCase();
-  const handInput = document.getElementById('yourHand');
-  handInput.value = yourHand;
+  yourHand = hand.trim();
   const display = document.getElementById('yourHandDisplay');
+  display.style.background = '';
+  display.style.borderLeftColor = '';
   if (yourHand) {
-    const combos = handCombos(yourHand);
-    if (combos > 0) {
-      display.textContent = `Your hand: ${yourHand} (${combos} ${combos === 1 ? 'combo' : 'combos'} in deck)`;
+    const hero = parseHeroHand(yourHand);
+    if (hero) {
+      display.textContent = hero.combos
+        ? `Your hand: ${hero.label} (${hero.combos} combos in deck)`
+        : `Your hand: ${hero.label}`;
       display.style.display = 'block';
     } else {
       display.textContent = 'Invalid hand format';
@@ -579,6 +644,7 @@ function selectAllHands() {
 
 let gridDragState = { isDragging: false, dragMode: null };
 
+// 13x13 grid: pairs on the diagonal, suited above it, offsuit below
 function buildHandGrid() {
   const grid = document.getElementById('handGrid');
   grid.innerHTML = '';
@@ -648,17 +714,12 @@ function toggleHandInTable(hand, cell) {
   }
 }
 
+// The grid edits the whole range, so it collapses every group into the first one
 function updateHandsFromTable() {
-  if (selectedHandsInTable.size === 0) {
-    if (rows.length > 0) rows[0].inp.value = '';
-  } else {
-    const rangeStr = handsToRangeString(selectedHandsInTable);
-    if (rows.length > 0) {
-      rows[0].inp.value = rangeStr;
-    } else {
-      addRow(rangeStr);
-    }
-  }
+  rows.slice(1).forEach(r => r.div.remove());
+  rows = rows.slice(0, 1);
+  if (rows.length === 0) addRow('');
+  rows[0].inp.value = handsToRangeString(selectedHandsInTable);
   updateAll();
 }
 
@@ -669,12 +730,13 @@ function buildRanges() {
   const el = document.getElementById('ranges');
   el.innerHTML = '';
   rows = [];
-  ['AJo+', '66+', 'AJs+'].forEach(v => addRow(v));
+  // Button goes in first: addRow inserts each row just above it
   const btn = document.createElement('button');
   btn.className = 'add-btn';
   btn.textContent = '+ Add range group';
   btn.onclick = () => { addRow(''); updateAll(); };
   el.appendChild(btn);
+  ['AJo+', '66+', 'AJs+'].forEach(v => addRow(v));
 }
 
 function addRow(val) {
@@ -713,41 +775,96 @@ function addRow(val) {
   div.appendChild(del);
 
   el.insertBefore(div, el.lastChild);
-  rows.push({ inp, badge, col });
+  rows.push({ inp, badge, col, div });
 }
 
 const BAR_COLS = ['#2563eb', '#e55a0d', '#7c3aed', '#16a34a', '#dc2626', '#0891b2', '#db2777'];
 
+const EQ_TRIALS = 40000;
+let eqRun = 0;
+
+// Simulate in small batches so the page stays responsive; any newer call cancels this one
+function runEquity(hero, classes, nOpp) {
+  const run = ++eqRun;
+  const val = document.getElementById('eqVal');
+  const bar = document.getElementById('eqBar');
+  const sub = document.getElementById('eqSub');
+  const reset = msg => { val.textContent = '—'; bar.style.width = '0'; sub.textContent = msg; };
+
+  if (!hero) return reset('Enter your hand to see equity.');
+  const dead = new Set(hero.cards);
+  const combos = [];
+  classes.forEach(cls => classCombos(cls).forEach(([a, b]) => {
+    if (!dead.has(a) && !dead.has(b)) combos.push([cardInt(a), cardInt(b)]);
+  }));
+  if (!combos.length) return reset('Select an opponent range to see equity.');
+
+  const h = hero.cards.map(cardInt);
+  const used = new Uint8Array(52);
+  const hu = [0, 0], multi = [0, 0];
+  const step = () => {
+    if (run !== eqRun) return;
+    const [w, d] = simTrials(h, combos, 1, 2000, used);
+    hu[0] += w; hu[1] += d;
+    if (nOpp > 1) {
+      const [w2, d2] = simTrials(h, combos, nOpp, 2000, used);
+      multi[0] += w2; multi[1] += d2;
+    }
+    const pct = 100 * hu[0] / hu[1];
+    val.textContent = pct.toFixed(1) + '%';
+    bar.style.width = pct.toFixed(1) + '%';
+    bar.style.background = pct >= 50 ? '#16a34a' : '#e55a0d';
+    let txt = (hu[1] / 1000).toFixed(0) + 'k simulated boards';
+    if (nOpp > 1) {
+      txt = multi[1]
+        ? `vs all ${nOpp} active opponents: ${(100 * multi[0] / multi[1]).toFixed(1)}% · ` + txt
+        : `Range too narrow to deal all ${nOpp} opponents · ` + txt;
+    }
+    sub.textContent = txt;
+    if (hu[1] < EQ_TRIALS) setTimeout(step, 0);
+  };
+  // Short delay so fast typing or dragging doesn't start runs that get thrown away
+  setTimeout(step, 40);
+}
+
 function updateAll() {
-  let total = 0;
+  // Your hole cards are dead: opponents can't hold combos that use them,
+  // and their two cards come from the 50 left in the deck.
+  const hero = yourHand ? parseHeroHand(yourHand) : null;
+  const dead = new Set(hero ? hero.cards : []);
+  const deckCombos = hero ? 1225 : TOTAL;
+
+  // Union across rows so overlapping groups (e.g. AJo+ and AQo) aren't counted twice
+  const allClasses = new Set();
   rows.forEach(({ inp, badge, col }) => {
     const v = inp.value.trim();
-    const c = parseRange(v);
+    const classes = parseRange(v);
     const hasContent = v && v.split(',').some(p => p.trim().length > 0);
-    const invalid = hasContent && c === 0;
-    badge.textContent = invalid ? 'invalid' : c + ' combos';
+    const invalid = hasContent && classes.size === 0;
+    badge.textContent = invalid ? 'invalid' : liveCombos(classes, dead) + ' combos';
     badge.style.background = invalid ? 'rgba(220,38,38,.15)' : col + '22';
     badge.style.color = invalid ? '#dc2626' : col;
-    if (!invalid) total += c;
+    classes.forEach(c => allClasses.add(c));
   });
-  total = Math.min(total, TOTAL);
+  const adjustedTotal = liveCombos(allClasses, dead);
+  const blocked = liveCombos(allClasses, new Set()) - adjustedTotal;
 
-  // Reduce opponent combos if player has a hand selected
-  let adjustedTotal = total;
-  if (yourHand && total > 0) {
-    const yourCombos = handCombos(yourHand);
-    if (yourCombos > 0) {
-      adjustedTotal = Math.max(0, total - 1);
-    }
+  // The grid always shows the combined range of every group
+  if (!gridDragState.isDragging) {
+    selectedHandsInTable = new Set(allClasses);
+    document.querySelectorAll('.hand-cell').forEach(c => c.classList.toggle('selected', allClasses.has(c.dataset.hand)));
   }
 
-  const pS = adjustedTotal / TOTAL;
+  const pS = adjustedTotal / deckCombos;
   const opp = POS.filter(p => p.id !== yourPosition && active[p.id]);
   const n = opp.length;
+  // Chance at least one opponent has it (treats opponents as independent, a close approximation)
   const pAny = n > 0 ? 1 - Math.pow(1 - pS, n) : 0;
 
-  document.getElementById('sCombos').textContent = adjustedTotal;
-  document.getElementById('sPct').textContent = (pS * 100).toFixed(1) + '%';
+  runEquity(hero, allClasses, n);
+
+  document.getElementById('sCombos').innerHTML = adjustedTotal + ' <small>/ ' + deckCombos + '</small>';
+  document.getElementById('sBlocked').textContent = hero ? blocked : '—';
   document.getElementById('sPer').textContent = (pS * 100).toFixed(1) + '%';
   document.getElementById('sAny').textContent = (pAny * 100).toFixed(1) + '%';
   document.getElementById('sLbl').textContent = 'Any of ' + n + ' opp.';
@@ -764,19 +881,22 @@ function updateAll() {
   bars.innerHTML = '';
   const perMax = Math.max(25, pS * 100 * 1.6);
 
-  POS.filter(p => p.id !== yourPosition).forEach((pos, i) => {
-    const on = active[pos.id];
-    const pct = on ? pS * 100 : 0;
+  if (n === 0) {
+    bars.innerHTML = '<div class="empty">No opponents left in the hand. Click a seat to unfold it.</div>';
+    return;
+  }
+
+  // Folded seats are left out so the list stays short
+  opp.forEach((pos, i) => {
+    const pct = pS * 100;
     const col = BAR_COLS[i % BAR_COLS.length];
-    const barW = on ? Math.min(pct / perMax * 100, 100) : 0;
+    const barW = Math.min(pct / perMax * 100, 100);
     const row = document.createElement('div');
     row.className = 'pr';
     row.innerHTML =
       '<span class="pl">' + pos.lbl + '</span>' +
-      '<div class="pt"><div class="pf" style="width:' + barW.toFixed(1) + '%;background:' + (on ? col : '#2a3a4a') + '">' +
-        (pct > 2 ? pct.toFixed(1) + '%' : '') +
-      '</div></div>' +
-      '<span class="pp">' + (on ? pct.toFixed(1) + '%' : '—') + '</span>';
+      '<div class="pt"><div class="pf" style="width:' + barW.toFixed(1) + '%;background:' + col + '"></div></div>' +
+      '<span class="pp">' + pct.toFixed(1) + '%</span>';
     bars.appendChild(row);
   });
 
@@ -787,9 +907,7 @@ function updateAll() {
   anyRow.className = 'pr';
   anyRow.innerHTML =
     '<span class="pl">Any</span>' +
-    '<div class="pt"><div class="pf" style="width:' + anyW.toFixed(1) + '%;background:#4a9eff">' +
-      (anyPct > 3 ? anyPct.toFixed(1) + '%' : '') +
-    '</div></div>' +
+    '<div class="pt"><div class="pf" style="width:' + anyW.toFixed(1) + '%;background:#ffc700"></div></div>' +
     '<span class="pp">' + anyPct.toFixed(1) + '%</span>';
   bars.appendChild(anyRow);
 }
@@ -805,7 +923,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  document.getElementById('yourHand').addEventListener('change', (e) => {
+  document.getElementById('yourHand').addEventListener('input', (e) => {
     setYourHand(e.target.value);
   });
 
@@ -819,9 +937,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-renderTable();
-renderChips();
-renderUnfoldChips();
+setYourPosition(yourPosition);
 buildRanges();
 buildHandGrid();
 updateAll();
@@ -831,6 +947,8 @@ updateAll();
 
 
 def main():
+    # All the logic lives in the page's JavaScript; Python just writes it to a
+    # temp file and opens it in the browser
     with tempfile.NamedTemporaryFile(
         mode='w', suffix='.html', delete=False, encoding='utf-8'
     ) as f:
