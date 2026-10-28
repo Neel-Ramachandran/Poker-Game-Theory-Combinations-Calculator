@@ -12,7 +12,7 @@ involved); all the combinatorics and equity math run in the page's JavaScript.
 
 ## Running it
 
-```
+```bash
 python3 hand_odds_calc.py
 ```
 
