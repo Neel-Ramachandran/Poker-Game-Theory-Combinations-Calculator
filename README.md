@@ -29,7 +29,7 @@ so your system's normal temp-file cleanup is what eventually removes it.
 - A 13x13 hand grid where you can drag to select ranges or type them in (like `TT+, AQs+`, `99-66`, `K9s-K6s`). Both views show the same range; editing the grid merges all the typed groups into one
 - Combo counts recounted card-by-card for the cards you're holding (blockers)
 - Per-seat probability bars showing how likely at least one opponent has a given hand
-- Your equity vs the opponent range if you get all-in preflop, heads-up and against every active seat (Monte Carlo, 40k simulated boards)
+- Your equity vs the opponent range if you get all-in preflop, heads-up and against every active (non-folded) seat (Monte Carlo, 40k simulated boards)
 
 ## The blocker part
 
