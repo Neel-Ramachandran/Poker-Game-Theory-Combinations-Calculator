@@ -2,9 +2,10 @@
 
 An 8-max poker range analyzer I built to get a better feel for blockers and
 card removal when I'm working on preflop ranges. You pick your seat and your
-two hole cards, mark out what you think each opponent is holding on a 13x13
+two hole cards, mark out what you think an opponent is holding on a 13x13
 grid, and it tells you how many combos of each hand actually remain and how
-likely someone still has it.
+likely someone still has it. That one range is applied to every active seat
+individually (not a separate range per seat).
 
 The whole thing is a single Python file with no dependencies. Python writes a
 temporary HTML page and opens it directly in your browser (no local server
